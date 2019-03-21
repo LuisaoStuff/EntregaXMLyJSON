@@ -137,7 +137,7 @@ while True:													############################
 		if opcion==3:
 			clear(10)
 			print("			Introduce una provincia")		
-			provincia=input("			>>> ").title()	# 	AÑADIR VALIDACIÓN DE LA PROVINCIA Y SI NO APARECE MOSTRAR UN ERROR
+			provincia=input("			>>> ").title()	
 			
 			if ValidarProvincia(fichero,provincia):
 				clear(0)
@@ -177,15 +177,25 @@ while True:													############################
 				print("			La localización de estos es:")
 				for radar in DiccionarioRadares(fichero,carretera):
 
+					LatitudInicial=radar["PuntoInicial"][1]
+					LongitudInicial=radar["PuntoInicial"][2]
+					LatitudFinal=radar["PuntoFinal"][1]
+					LongitudFinal=radar["PuntoFinal"][2]
+
 					print("		Radar:	")
 					print("		 -Punto km inicial >>>",radar["PuntoInicial"][0])
-					print("		   -Latitud >>>",radar["PuntoInicial"][1])
-					print("		   -Longitud >>>",radar["PuntoInicial"][2])
+					print("		   -Latitud >>>",LatitudInicial)
+					print("		   -Longitud >>>",LongitudInicial)
 					print("		 -Punto km inicial >>>",radar["PuntoFinal"][0])
-					print("		   -Latitud >>>",radar["PuntoFinal"][1])
-					print("		   -Longitud >>>",radar["PuntoFinal"][2])
+					print("		   -Latitud >>>",LatitudFinal)
+					print("		   -Longitud >>>",LongitudFinal)
+					url='https://www.openstreetmap.org/directions?engine=graphhopper_car&route='+LatitudInicial+'%2C'+LongitudInicial+'%3B'+LatitudFinal+'%2C'+LongitudFinal+'#map=12/39.0407/-1.8079&layers=N'
+					print("		 ",url)
 				Pausa()
 			else:
 				clear(10)
 				print("			Esa carretera no existe")
 				Pausa()
+
+
+
