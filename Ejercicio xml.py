@@ -35,6 +35,13 @@ def ContarRadares(Fichero,Provincia):
 	TotalRadares=Fichero.xpath('count(//PROVINCIA[NOMBRE="%s"]/CARRETERA/RADAR)'%Provincia)
 	return int(TotalRadares)
 
+def ValidarProvincia(Fichero,Provincia):
+
+	Aparece=int(Fichero.xpath('count(//PROVINCIA[NOMBRE="%s"])'%Provincia))
+	if Aparece!=0:
+		return True
+	else:
+		return False
 
 ########################################################################
 #						   Código Principal							   #
@@ -93,13 +100,19 @@ while True:													############################
 		if opcion==3:
 			clear(10)
 			print("			Introduce una provincia")		
-			provincia=input("			>>> ").title()
-			clear(0)
-			print("			Carreteras de",provincia,":")
-			for carretera in ListarCarreteras(fichero,provincia):
-				print("		  >>>",carretera)
-			print("			Y tiene un total de",ContarRadares(fichero,provincia),"radares")
-			Pausa()
+			provincia=input("			>>> ").title()	# 	AÑADIR VALIDACIÓN DE LA PROVINCIA Y SI NO APARECE MOSTRAR UN ERROR
+			
+			if ValidarProvincia(fichero,provincia):
+				clear(0)
+				print("			Carreteras de",provincia,":")
+				for carretera in ListarCarreteras(fichero,provincia):
+					print("		  >>>",carretera)
+				print("			Y tiene un total de",ContarRadares(fichero,provincia),"radares")
+				Pausa()
+			else:
+				clear(10)
+				print("			Esa provincia no existe")
+				Pausa()
 
 		if opcion==4:
 			Pausa()
