@@ -43,6 +43,19 @@ def ValidarProvincia(Fichero,Provincia):
 	else:
 		return False
 
+def ValidarCarretera(Fichero,Carretera):
+
+	Aparece=int(Fichero.xpath('count(//CARRETERA[DENOMINACION="%s"])'%Carretera))
+	if Aparece!=0:
+		return True
+	else:
+		return False
+
+def ProvinciasPorCarretera(Fichero,Carretera):
+
+	provincias=Fichero.xpath('//CARRETERA[DENOMINACION="%s"]/../NOMBRE/text()'%Carretera)
+	return provincias
+
 ########################################################################
 #						   Código Principal							   #
 ########################################################################
@@ -115,7 +128,15 @@ while True:													############################
 				Pausa()
 
 		if opcion==4:
-			Pausa()
+			clear(10)
+			print("			Introduce una carretera")		
+			carretera=input("			>>> ").title()	# 	AÑADIR VALIDACIÓN DE LA PROVINCIA Y SI NO APARECE MOSTRAR UN ERROR
+			if ValidarCarretera(fichero,carretera):
+
+				Pausa()
+			else:
+				
+				Pausa()
 
 		if opcion==5:
 			Pausa()
