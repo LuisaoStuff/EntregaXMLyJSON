@@ -56,7 +56,7 @@ def Filmografia(Actor,Catalogo):		#	Recibe un actor y añade a una lista las pel
 			lista.append(pelicula["title"])
 	return lista
 
-def ValidarFecha(Fecha):
+def ValidarFecha(Fecha):		#	Recibe una fecha y valida que tenga el formato YYYY-MM-DD
 	try:
 		Fecha = datetime.strptime(Fecha, '%Y-%m-%d')
 		return True
@@ -64,12 +64,12 @@ def ValidarFecha(Fecha):
 		print("\n			Introduce una fecha correcta")
 		return False
 
-def FiltrarPorFechas(F1,F2,Catalogo):
-	lista=[]
-	F1=int(F1.replace("-",""))
-	F2=int(F2.replace("-",""))
-	for pelicula in Catalogo:
-		Fecha=int(pelicula["releaseDate"].replace("-",""))
+def FiltrarPorFechas(F1,F2,Catalogo):	#	Recibe dos fechas. Si hay una pelicula cuya fecha de estreno está
+	lista=[]							#	entre esas dos, la añade a una lista.
+	F1=int(F1.replace("-",""))									#	\
+	F2=int(F2.replace("-",""))									#	|	Convierto las fechas en enteros para
+	for pelicula in Catalogo:									#	|	poder compararlas en el "if"
+		Fecha=int(pelicula["releaseDate"].replace("-",""))		#	/
 		if F1<Fecha and F2>Fecha:
 			lista.append(pelicula["title"])
 	return lista
