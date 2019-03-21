@@ -56,6 +56,30 @@ def ProvinciasPorCarretera(Fichero,Carretera):
 	provincias=Fichero.xpath('//CARRETERA[DENOMINACION="%s"]/../NOMBRE/text()'%Carretera)
 	return provincias
 
+def ContarRCarretera(Fichero,Carretera):
+
+	TotalR=Fichero.xpath('count(//CARRETERA[DENOMINACION="%s"]/RADAR)'%Carretera)
+	return int(TotalR)
+
+def DiccionarioRadares(fichero,carretera):
+
+	lista=[]
+
+	for i in range(0,ContarRCarretera(fichero,carretera)):
+		PuntoInicial=[]
+		PuntoInicial.append(fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/PUNTO_INICIAL/PK/text()'%carretera)[i])
+		PuntoInicial.append(fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/PUNTO_INICIAL/LATITUD/text()'%carretera)[i])
+		PuntoInicial.append(fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/PUNTO_INICIAL/LONGITUD/text()'%carretera)[i])
+		PuntoFinal=[]
+		PuntoFinal.append(fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/PUNTO_FINAL/PK/text()'%carretera)[i])
+		PuntoFinal.append(fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/PUNTO_FINAL/LATITUD/text()'%carretera)[i])
+		PuntoFinal.append(fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/PUNTO_FINAL/LONGITUD/text()'%carretera)[i])
+		Sentido=fichero.xpath('//CARRETERA[DENOMINACION="%s"]/RADAR/SENTIDO/text()'%carretera)[i]
+		Radar={"PuntoInicial":PuntoInicial,"PuntoFinal":PuntoFinal,"Sentido":Sentido}
+		lista.append(Radar)
+
+	return lista
+
 ########################################################################
 #						   Código Principal							   #
 ########################################################################
@@ -130,13 +154,38 @@ while True:													############################
 		if opcion==4:
 			clear(10)
 			print("			Introduce una carretera")		
-			carretera=input("			>>> ").title()	# 	AÑADIR VALIDACIÓN DE LA PROVINCIA Y SI NO APARECE MOSTRAR UN ERROR
+			carretera=input("			>>> ").title()
 			if ValidarCarretera(fichero,carretera):
-
+				clear(0)
+				print("			La carretera",carretera,"pasa por:")
+				for provincia in ProvinciasPorCarretera(fichero,carretera):
+					print("			-",provincia)
+				print("			Y tiene",ContarRCarretera(fichero,carretera),"radares.")
 				Pausa()
 			else:
-				
+				clear(10)
+				print("			Esa carretera no existe")
 				Pausa()
 
 		if opcion==5:
-			Pausa()
+			clear(10)
+			print("			Introduce una carretera")		
+			carretera=input("			>>> ").title()
+			if ValidarCarretera(fichero,carretera):
+				clear(0)
+				print("			La carretera tiene",ContarRCarretera(fichero,carretera),"radares.")
+				print("			La localización de estos es:")
+				for radar in DiccionarioRadares(fichero,carretera):
+
+					print("		Radar:	")
+					print("		 -Punto km inicial >>>",radar["PuntoInicial"][0])
+					print("		   -Latitud >>>",radar["PuntoInicial"][1])
+					print("		   -Longitud >>>",radar["PuntoInicial"][2])
+					print("		 -Punto km inicial >>>",radar["PuntoFinal"][0])
+					print("		   -Latitud >>>",radar["PuntoFinal"][1])
+					print("		   -Longitud >>>",radar["PuntoFinal"][2])
+				Pausa()
+			else:
+				clear(10)
+				print("			Esa carretera no existe")
+				Pausa()
