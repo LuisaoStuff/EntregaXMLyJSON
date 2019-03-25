@@ -11,8 +11,7 @@ import webbrowser
 #						      Funciones							       #
 ########################################################################
 
-def fehInstalado():
-													#######################################################
+def fehInstalado():									#######################################################
 	system('whereis feh > salida.txt')				#	Comprueba  si  tienes instalado  el paquete feh   #
 	clear(7)										#	para luego poder ejecutar el  comando. Si no lo   #
 	with open("salida.txt","r") as Salida:			#	tienes instalado, te da la opcion de instalarlo   #
@@ -36,7 +35,6 @@ def fehInstalado():
 	return Miniaturas
 
 def Desinstalar_feh():
-
 	system('whereis feh > salida.txt')					#############################################
 	clear(10)											#	Al final del programa te da la opcion   #
 	with open("salida.txt","r") as Salida:				#	de desinstalar el paquete feh 			#
@@ -49,12 +47,10 @@ def Desinstalar_feh():
 	system('rm salida.txt')
 
 def clear(Espaciado):	#	Pequeña funcion que simula un clear, además recibe un entero para centrar
-						#	el texto que lo sigue a continuación.
-	system('clear')
+	system('clear')		#	el texto que lo sigue a continuación.
 	print("\n"*Espaciado)
 
 def Pausa():
-
 	input('\n		  "Pusa enter" para volver al menú...')
 
 def ListarPeliculas(Catalogo):	#	Recibe el catálogo e imprime por pantalla el título, año y duración de esta
@@ -112,20 +108,17 @@ def FiltrarPorFechas(F1,F2,Catalogo):	#	Recibe dos fechas. Si hay una pelicula c
 			lista.append(pelicula["title"])
 	return lista
 
-def MediaMasAlta(Lista,Catalogo):
-
+def MediaMasAlta(Lista,Catalogo):	#	Recibe una lista de peliculas y el catalogo completo. Devuelve las 3 mejores con url y media
 	ListaFinal=[]
-
 	for pelicula in Catalogo:
 		if pelicula["title"] in Lista:
-			film=[]
-			film.append(pelicula["title"])
+			film=[]															#	Inicializo una lista con el título la media de notas
+			film.append(pelicula["title"])									#	y la url del poster
 			film.append(sum(pelicula["ratings"])/len(pelicula["ratings"]))
 			film.append(pelicula["posterurl"])
-			ListaFinal.append(film)
-	ListaFinal=sorted(ListaFinal, key=lambda nota: nota[1],reverse=True)
-	#print(ListaFinal[0:3])
-	return ListaFinal[0:3]
+			ListaFinal.append(film)											#	Añado la lista film a la lista final de peliculas
+	ListaFinal=sorted(ListaFinal, key=lambda nota: nota[1],reverse=True)	#	Ordeno la lista por calificaciones de mayor a menor
+	return ListaFinal[0:3]													#	y devuelvo solo las 3 primeras.
 
 
 ########################################################################
@@ -219,14 +212,14 @@ with open("movies.json","r") as fichero:
 					F2=input("			Fecha >>> ")	#	/
 				try:
 					clear(0)
-					ListaPeliculas=FiltrarPorFechas(F1,F2,Catalogo)		#	Filtro primero las peliculas entre las dos fechas
+					ListaPeliculas=FiltrarPorFechas(F1,F2,Catalogo)			#	Filtro primero las peliculas entre las dos fechas
 					for pelicula in MediaMasAlta(ListaPeliculas,Catalogo):	#	Despues uso esa lista para encontrar las 3 con
 						print("	>",pelicula[0],"-",round(pelicula[1],2))	#	puntuacion mas alta e imprimo los datos.
-						if Posters:		#	Si se ha instalado "feh" se utiliza
+						if Posters:											#	Si se ha instalado "feh" se utiliza
 							system('feh -Zqa 125 --title "{}" {} &2> /dev/null'.format(pelicula[0],pelicula[2]))
-						else:			#	Si no, utiliza la librería webbrowser
+						else:												#	Si no, utiliza la librería webbrowser
 							webbrowser.open(pelicula[2])
 					Pausa()
 				except:
-					print("			No se han encontrado peliculas")			#	Si no, significa que no ha encontrado ninguna pelicula
+					print("			No se han encontrado peliculas")		#	Si no, significa que no ha encontrado ninguna pelicula
 					Pausa()
