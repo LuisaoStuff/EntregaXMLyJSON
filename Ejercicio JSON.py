@@ -5,10 +5,48 @@
 import json
 from os import system
 from datetime import datetime	#	Importo esta librería para validar la fecha en el ultimo ejercicio
+import webbrowser
 
 ########################################################################
 #						      Funciones							       #
 ########################################################################
+
+def fehInstalado():
+													#######################################################
+	system('whereis feh > salida.txt')				#	Comprueba  si  tienes instalado  el paquete feh   #
+	clear(7)										#	para luego poder ejecutar el  comando. Si no lo   #
+	with open("salida.txt","r") as Salida:			#	tienes instalado, te da la opcion de instalarlo   #
+		if Salida.readlines()[0]=='feh:\n':			#######################################################
+			print('''		Parece que no tienes instalado el paquete "feh"
+		Si desea que durante la ejecución de este python
+		se puedan mostrar las imágenes de los personajes
+		debería instalarlo.
+				''')
+			Afirmacion=['YES','Y','SI','S']
+			Eleccion=input('		¿Desea instalar el paquete "feh"?	').upper()
+			if Eleccion in Afirmacion:
+				system('sudo apt-get install -y feh')
+				Miniaturas=True
+			else:
+				Miniaturas=False
+		else:
+			Miniaturas=True
+	Salida.close()
+	system('rm salida.txt')
+	return Miniaturas
+
+def Desinstalar_feh():
+
+	system('whereis feh > salida.txt')					#############################################
+	clear(10)											#	Al final del programa te da la opcion   #
+	with open("salida.txt","r") as Salida:				#	de desinstalar el paquete feh 			#
+		if Salida.readlines()[0]!='feh:\n':				#############################################
+			Afirmacion=['YES','Y','SI','S']
+			Eleccion=input('	   Antes de salir, ¿desea desinstalar el paquete "feh"?	').upper()
+			if Eleccion in Afirmacion:
+				system('sudo apt-get remove -y feh')
+	Salida.close()
+	system('rm salida.txt')
 
 def clear(Espaciado):	#	Pequeña funcion que simula un clear, además recibe un entero para centrar
 						#	el texto que lo sigue a continuación.
@@ -74,6 +112,20 @@ def FiltrarPorFechas(F1,F2,Catalogo):	#	Recibe dos fechas. Si hay una pelicula c
 			lista.append(pelicula["title"])
 	return lista
 
+def MediaMasAlta(Lista,Catalogo):
+
+	ListaFinal=[]
+
+	for pelicula in Catalogo:
+		if pelicula["title"] in Lista:
+			film=[]
+			film.append(pelicula["title"])
+			film.append(sum(pelicula["ratings"])/len(pelicula["ratings"]))
+			film.append(pelicula["posterurl"])
+			ListaFinal.append(film)
+	ListaFinal=sorted(ListaFinal, key=lambda nota: nota[1],reverse=True)
+	#print(ListaFinal[0:3])
+	return ListaFinal[0:3]
 
 
 ########################################################################
@@ -83,6 +135,8 @@ def FiltrarPorFechas(F1,F2,Catalogo):	#	Recibe dos fechas. Si hay una pelicula c
 with open("movies.json","r") as fichero:
 
 	Catalogo = json.load(fichero)
+
+	Posters=fehInstalado()
 
 	while True:													############################
 																#			Menú           #
@@ -111,6 +165,8 @@ with open("movies.json","r") as fichero:
 			if opcion==0:		#############
 								#	Salir   #
 				clear(0)		#############
+				Desinstalar_feh()
+				clear(0)
 				break
 
 			if opcion==1:
@@ -150,7 +206,7 @@ with open("movies.json","r") as fichero:
 				Pausa()
 
 			if opcion==5:
-				clear(10)
+				clear(6)
 				print("			El formato es YYYY-MM-DD\n\n")
 				
 				print("			Primera fecha:")		#	\
@@ -162,10 +218,15 @@ with open("movies.json","r") as fichero:
 				while ValidarFecha(F2)==False:			#	|
 					F2=input("			Fecha >>> ")	#	/
 				try:
-					print("			Se han encontrado",len(FiltrarPorFechas(F1,F2,Catalogo)),"películas:")	#	Si la lista devuelta por la funcion
-					for pelicula in FiltrarPorFechas(F1,F2,Catalogo):										#	tiene longitud, la imprime
-						print("			> ",pelicula)
+					clear(0)
+					ListaPeliculas=FiltrarPorFechas(F1,F2,Catalogo)		#	Filtro primero las peliculas entre las dos fechas
+					for pelicula in MediaMasAlta(ListaPeliculas,Catalogo):	#	Despues uso esa lista para encontrar las 3 con
+						print("	>",pelicula[0],"-",round(pelicula[1],2))	#	puntuacion mas alta e imprimo los datos.
+						if Posters:		#	Si se ha instalado "feh" se utiliza
+							system('feh -Zqa 125 --title "{}" {} &2> /dev/null'.format(pelicula[0],pelicula[2]))
+						else:			#	Si no, utiliza la librería webbrowser
+							webbrowser.open(pelicula[2])
+					Pausa()
 				except:
 					print("			No se han encontrado peliculas")			#	Si no, significa que no ha encontrado ninguna pelicula
-
-				Pausa()
+					Pausa()
